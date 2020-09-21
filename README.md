@@ -2,25 +2,7 @@
 
 Command-line tool for finding and reporting dead links in a file written in node.js
 
-**Features**
-
-The tool finds all URLs in the file by using the following schemes:
-
--http://
-
--https://
-
-The tool supports the following status codes:
-
--200
-
--400
-
--404
-
 **Installation**
-
-- Clone the repository to your local machine
 
 - Install the tool globally by running the following command
 
@@ -38,4 +20,20 @@ Version information:
 
 Help:
 
-> Utest
+> Utest or Utest -h
+
+
+**Features**
+
+The tool finds all URLs in the file by using the following schemes: 
+-http://
+
+-https://
+
+The tool checks all the links and prints the output as follow
+
+-Status code 200 is printed in green
+
+-Status code 400 or 404 is printed in red
+
+-All other statuses are printed in grey
