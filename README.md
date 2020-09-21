@@ -26,14 +26,15 @@ Help:
 **Features**
 
 The tool finds all URLs in the file by using the following schemes: 
--http://
 
--https://
+- http://
+
+- https://
 
 The tool checks all the links and prints the output as follow
 
--Status code 200 is printed in green
+- Status code 200 is printed in green
 
--Status code 400 or 404 is printed in red
+- Status code 400 or 404 is printed in red
 
--All other statuses are printed in grey
+- All other statuses are printed in grey
