@@ -4,9 +4,12 @@ Command-line tool for finding and reporting dead links in a file written in node
 
 **Installation**
 
-- Install the tool globally by running the following command
+- Clone the repository to your local machine
 
-> npm i -g Utest
+- Install dependencies
+> npm install
+- Create symlink for the command
+> npm link
 
 **Usage**
 
@@ -31,7 +34,7 @@ The tool finds all URLs in the file by using the following schemes:
 
 - https://
 
-The tool checks all the links and prints the output as follow
+The tool checks all the links and prints the links along with the status code  as follow
 
 - Status code 200 is printed in green
 
