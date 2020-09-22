@@ -4,8 +4,10 @@ const chalk = require("chalk");
 const boxen = require("boxen");
 const yargs = require("yargs");
 const fetch = require("node-fetch");
+const fs = require("fs");
 const v = require("./package.json").version;
 
+//styling of the box for the tool name and version
 const boxenOptions = {
   padding: 1,
   margin: 1,
@@ -29,12 +31,10 @@ const argv = yargs
   .version(`${msgBox}`)
   .describe("version", "show version information").argv;
 
-const fs = require("fs");
-
 // Create stream with the file
 const s = fs.createReadStream(argv.file);
 
-var urlList;
+let urlList;
 s.on("data", (buf) => {
   // Get all the URL links from the file
   urlList = buf
