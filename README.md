@@ -33,3 +33,5 @@ The tool checks all the links and prints the links along with the status code as
 - Status code 400 or 404 is printed in red
 
 - All other statuses are printed in grey
+
+For examples please visit https://medium.com/@egrinberg/cli-utest-19f1429a8de4
