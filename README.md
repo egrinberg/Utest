@@ -11,7 +11,7 @@ Command-line tool for finding and reporting dead links in a file written in node
 
 Find and check URLs inside file:
 
-> utest -f <filename>
+> utest -f filename
 
 Version information:
 
