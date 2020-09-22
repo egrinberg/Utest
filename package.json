@@ -1,9 +1,9 @@
 {
-  "name": "Utest",
+  "name": "utest",
   "version": "1.0.0",
   "description": "Command-line tool for finding and reporting dead links in a file",
   "bin": {
-    "Utest": "./Utest.js"
+    "utest": "./Utest.js"
   },
   "repository": {
     "type": "git",
