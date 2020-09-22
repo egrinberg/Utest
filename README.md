@@ -4,18 +4,14 @@ Command-line tool for finding and reporting dead links in a file written in node
 
 **Installation**
 
-- Clone the repository to your local machine
+> npm i -g https://github.com/egrinberg/Utest
 
-- Install dependencies
-> npm install
-- Create symlink for the command
-> npm link
 
 **Usage**
 
 Find and check URLs inside file:
 
-> utest -f file.txt
+> utest -f <filename>
 
 Version information:
 
@@ -28,13 +24,9 @@ Help:
 
 **Features**
 
-The tool finds all URLs in the file by using the following schemes: 
+The tool finds all URLs in the file by using http:// or https:// schemes
 
-- http://
-
-- https://
-
-The tool checks all the links and prints the links along with the status code  as follow
+The tool checks all the links and prints the links along with the status code as follow
 
 - Status code 200 is printed in green
 
