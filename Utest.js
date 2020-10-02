@@ -28,6 +28,7 @@ const argv = yargs
   .help("h")
   .alias("h", "help")
   .alias("v", "version")
+  .alias("V", "version")
   .version(`${msgBox}`)
   .describe("version", "show version information").argv;
 
@@ -42,25 +43,32 @@ s.on("data", (buf) => {
     .match(/(http|https)(:\/\/)([\w+\-&@`~#$%^*.=/?:]+)/gi);
 });
 
+function timeout(ms, promise) {
+  return new Promise(function(resolve, reject) {
+    setTimeout(function() {
+      reject(new Error("timeout"))
+    }, ms)
+    promise.then(resolve, reject)
+  })
+}
+
 s.on("end", () => {
   //Iterate through the links and check their status
   urlList.forEach(async (url) => {
-    try {
-      const urlTest = await fetch(url, { method: "head" });
-
-      if (urlTest.status == 200) {
+    timeout(3000, fetch(url, { method: "head" })).then(function(res) {
+      if (res.status == 200) {
         console.log(
-          chalk.green.bold(`[GOOD] Status: [${urlTest.status}] ${url}`)
+          chalk.green.bold(`[GOOD] Status: [${res.status}] ${url}`)
         );
-      } else if (urlTest.status == 400 || urlTest.status == 404) {
-        console.log(chalk.red.bold(`[BAD] Status: [${urlTest.status}] ${url}`));
-      } else {
+      } else if (res.status == 400 || res.status == 404){
+        console.log(chalk.red.bold(`[BAD] Status: [${res.status}] ${url}`));
+      }else{
         console.log(
-          chalk.grey.bold(`[UNKNOWN] Status: [${urlTest.status}] ${url}`)
+          chalk.grey.bold(`[UNKNOWN] Status: [${res.status}] ${url}`)
         );
       }
-    } catch (error) {
+    }).catch(function(err) {
       console.log(chalk.grey.bold(`[UNKNOWN] Status: [UNKNOWN] ${url}`));
-    }
+    })   
   });
 });
