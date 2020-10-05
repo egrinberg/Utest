@@ -11,15 +11,15 @@ Command-line tool for finding and reporting dead links in a file written in node
 
 Find and check URLs inside file:
 
-> utest -f filename
+> utest -f filename  or utest --file filename
 
 Version information:
 
-> utest -v
+> utest -v or -V or --version
 
 Help:
 
-> utest or utest -h
+> utest -h or utest --help
 
 
 **Features**
