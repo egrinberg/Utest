@@ -29,6 +29,8 @@ const argv = yargs
   .alias("h", "help")
   .alias("v", "version")
   .alias("V", "version")
+  .alias("j", "json")
+  .describe("json", "print in JSON format")
   .version(`${msgBox}`)
   .describe("version", "show version information").argv;
 
@@ -43,32 +45,44 @@ s.on("data", (buf) => {
     .match(/(http|https)(:\/\/)([\w+\-&@`~#$%^*.=/?:]+)/gi);
 });
 
-function timeout(ms, promise) {
-  return new Promise(function(resolve, reject) {
-    setTimeout(function() {
-      reject(new Error("timeout"))
-    }, ms)
-    promise.then(resolve, reject)
-  })
+//print responses colorized
+function printResponse(data) {
+  for (var item of data) {
+    if (item.status == 200) {
+      console.log(
+        chalk.green.bold(`[GOOD] Status: [${item.status}] ${item.url}`)
+      );
+    } else if (item.status == 400 || item.status == 404) {
+      console.log(chalk.red.bold(`[BAD] Status: [${item.status}] ${item.url}`));
+    } else {
+      console.log(
+        chalk.grey.bold(`[UNKNOWN] Status: [${item.status}] ${item.url}`)
+      );
+    }
+  }
 }
 
-s.on("end", () => {
+s.on("end", async () => {
+  var jsonResponse = [];
+  var jsonU;
+
   //Iterate through the links and check their status
-  urlList.forEach(async (url) => {
-    timeout(3000, fetch(url, { method: "head" })).then(function(res) {
-      if (res.status == 200) {
-        console.log(
-          chalk.green.bold(`[GOOD] Status: [${res.status}] ${url}`)
-        );
-      } else if (res.status == 400 || res.status == 404){
-        console.log(chalk.red.bold(`[BAD] Status: [${res.status}] ${url}`));
-      }else{
-        console.log(
-          chalk.grey.bold(`[UNKNOWN] Status: [${res.status}] ${url}`)
-        );
+
+  await Promise.all(
+    urlList.map(async (url) => {
+      try {
+        const urlTest = await fetch(url, { method: "head", timeout: 1500 });
+        jsonU = { url: `${url}`, status: `${urlTest.status}` };
+        jsonResponse.push(jsonU);
+      } catch (error) {
+        jsonU = { url: `${url}`, status: "UNKNOWN" };
+        jsonResponse.push(jsonU);
       }
-    }).catch(function(err) {
-      console.log(chalk.grey.bold(`[UNKNOWN] Status: [UNKNOWN] ${url}`));
-    })   
-  });
+    })
+  );
+  if (argv.json) {
+    console.log(JSON.stringify(jsonResponse));
+  } else {
+    printResponse(jsonResponse);
+  }
 });
