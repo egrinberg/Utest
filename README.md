@@ -40,4 +40,6 @@ Help:
 
 - Network code is optimized to only request headers
 
+- Appropriate error code is printed when program exits. If there are no errors meaning all links are good,the program exits with 0. Otherwise, exits with a non-zero exit code.
+
 For examples please visit https://medium.com/@egrinberg/cli-utest-19f1429a8de4

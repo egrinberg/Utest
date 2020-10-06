@@ -62,6 +62,15 @@ function printResponse(data) {
   }
 }
 
+function checkStatus(data) {
+  for (var item of data) {
+    if (item.status == 400 || item.status == 404 || item.status == "UNKNOWN") {
+      return 1;
+    }
+  }
+  return 0;
+}
+
 s.on("end", async () => {
   var jsonResponse = [];
   var jsonU;
@@ -85,4 +94,10 @@ s.on("end", async () => {
   } else {
     printResponse(jsonResponse);
   }
+  //var errCode=checkStatus(jsonResponse);
+  //console.log(checkStatus(jsonResponse));
+  process.exit(checkStatus(jsonResponse));
+});
+process.on("exit", function (code) {
+  return console.log(`About to exit with code ${code}`);
 });
