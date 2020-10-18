@@ -5,6 +5,9 @@ const boxen = require("boxen");
 const yargs = require("yargs");
 const fetch = require("node-fetch");
 const fs = require("fs");
+const path = require("path");
+const readline = require("readline");
+const { boolean } = require("yargs");
 const v = require("./package.json").version;
 
 //styling of the box for the tool name and version
@@ -31,12 +34,14 @@ const argv = yargs
   .alias("V", "version")
   .alias("j", "json")
   .describe("json", "print in JSON format")
+  .alias("i","ignore")
+  .nargs("i", 1)
+  .describe("ignore","ignore URLs in this file")
   .version(`${msgBox}`)
   .describe("version", "show version information").argv;
 
 // Create stream with the file
 const s = fs.createReadStream(argv.file);
-
 let urlList;
 s.on("data", (buf) => {
   // Get all the URL links from the file
@@ -44,6 +49,57 @@ s.on("data", (buf) => {
     .toString()
     .match(/(http|https)(:\/\/)([\w+\-&@`~#$%^*.=/?:]+)/gi);
 });
+
+const f = fs.createReadStream(argv.ignore);
+let ignoreUrls;
+f.on("data", (buf) => {
+  // Get all the URL links from the file
+  console.log("Reading file here");
+  ignoreUrls = buf
+    .toString()
+    .split('\n')
+    .filter(e => !e.startsWith("#"));
+    ignoreUrls.forEach(e =>{
+      if(!['http://', 'https://'].some(http => e.startsWith(http))) {
+        console.log("Invalid urls in igore-urls file. Urls should start with 'https:// or http://'");
+        process.exit(1);
+      }
+    });
+});
+
+/*
+//Read ignore-urls file
+const filePath = path.join(__dirname,argv.ignore);
+var ignoreUrls;
+fs.readFile(filePath,'utf-8',function(err, data) {
+  if(err) console.log("Unsuccess to read file: ", err);
+  else{
+    ignoreUrls = data.split('\n').filter(e => !e.startsWith("#"));
+    console.log("ignore here", ignoreUrls);
+    ignoreUrls.forEach(e =>{
+      //console.log(e);
+      if(!['http://', 'https://'].some(http => e.startsWith(http))) {
+        console.log("Invalid urls in igore-urls file. Urls should start with 'https:// or http://'");
+        process.exit(1);
+      }
+    });
+  }
+})
+console.log("ignore ", ignoreUrls);
+*/
+function ignore(url){
+  var result=false;
+  if(![ignoreUrls.length<1 || ignoreUrls==undefined]){
+    ignoreUrls.forEach(e => {
+      if(url.startsWith(e))
+      {
+        console.log(url);
+        result=true;
+      }
+    });
+  }
+  return result;
+}
 
 //print responses colorized
 function printResponse(data) {
@@ -76,17 +132,19 @@ s.on("end", async () => {
   var jsonU;
 
   //Iterate through the links and check their status
-
+  console.log(urlList);
+  console.log(ignoreUrls);
   await Promise.all(
-    urlList.map(async (url) => {
-      try {
-        const urlTest = await fetch(url, { method: "head", timeout: 1500 });
-        jsonU = { url: `${url}`, status: `${urlTest.status}` };
-        jsonResponse.push(jsonU);
-      } catch (error) {
-        jsonU = { url: `${url}`, status: "UNKNOWN" };
-        jsonResponse.push(jsonU);
-      }
+    urlList.map(async (url) => { 
+          try { 
+            console.log(ignore(url));
+            const urlTest = await fetch(url, { method: "head", timeout: 1500 });
+            jsonU = { url: `${url}`, status: `${urlTest.status}` };
+            jsonResponse.push(jsonU);
+          } catch (error) {
+            jsonU = { url: `${url}`, status: "UNKNOWN" };
+            jsonResponse.push(jsonU);
+          }   
     })
   );
   if (argv.json) {
