@@ -5,9 +5,9 @@ const boxen = require("boxen");
 const yargs = require("yargs");
 const fetch = require("node-fetch");
 const fs = require("fs");
-const path = require("path");
 const readline = require("readline");
 const { boolean } = require("yargs");
+const { resolve } = require("path");
 const v = require("./package.json").version;
 
 //styling of the box for the tool name and version
@@ -50,43 +50,31 @@ s.on("data", (buf) => {
     .match(/(http|https)(:\/\/)([\w+\-&@`~#$%^*.=/?:]+)/gi);
 });
 
-const f = fs.createReadStream(argv.ignore);
-let ignoreUrls;
-f.on("data", (buf) => {
-  // Get all the URL links from the file
-  console.log("Reading file here");
-  ignoreUrls = buf
-    .toString()
-    .split('\n')
-    .filter(e => !e.startsWith("#"));
-    ignoreUrls.forEach(e =>{
-      if(!['http://', 'https://'].some(http => e.startsWith(http))) {
-        console.log("Invalid urls in igore-urls file. Urls should start with 'https:// or http://'");
-        process.exit(1);
-      }
-    });
-});
+function readIgnoreURL(){
+  if(!argv.ignore)
+    return Promise.resolve([]);
 
-/*
-//Read ignore-urls file
-const filePath = path.join(__dirname,argv.ignore);
-var ignoreUrls;
-fs.readFile(filePath,'utf-8',function(err, data) {
-  if(err) console.log("Unsuccess to read file: ", err);
-  else{
-    ignoreUrls = data.split('\n').filter(e => !e.startsWith("#"));
-    console.log("ignore here", ignoreUrls);
-    ignoreUrls.forEach(e =>{
-      //console.log(e);
-      if(!['http://', 'https://'].some(http => e.startsWith(http))) {
-        console.log("Invalid urls in igore-urls file. Urls should start with 'https:// or http://'");
-        process.exit(1);
-      }
+  return new Promise((resolve, reject) => {
+    const urlToBeIgnored = [];
+    const readInterface = readline.createInterface({
+      input: fs.createReadStream(argv.ignore),
+      console: false
     });
-  }
-})
-console.log("ignore ", ignoreUrls);
-*/
+
+    readInterface
+    .on('line', function(line) {
+      if(!line.startsWith('#'))
+        urlToBeIgnored.push(line);
+    })
+    .on('close', function() {
+      resolve(urlToBeIgnored);
+    })
+    .on('error', function(error) {
+      reject(error);
+    });
+  });
+}
+
 function ignore(url){
   var result=false;
   if(![ignoreUrls.length<1 || ignoreUrls==undefined]){
@@ -128,34 +116,24 @@ function checkStatus(data) {
 }
 
 s.on("end", async () => {
-  var jsonResponse = [];
-  var jsonU;
-
-  //Iterate through the links and check their status
-  console.log(urlList);
-  console.log(ignoreUrls);
-  await Promise.all(
-    urlList.map(async (url) => { 
-          try { 
-            console.log(ignore(url));
-            const urlTest = await fetch(url, { method: "head", timeout: 1500 });
-            jsonU = { url: `${url}`, status: `${urlTest.status}` };
-            jsonResponse.push(jsonU);
-          } catch (error) {
-            jsonU = { url: `${url}`, status: "UNKNOWN" };
-            jsonResponse.push(jsonU);
-          }   
-    })
-  );
-  if (argv.json) {
-    console.log(JSON.stringify(jsonResponse));
-  } else {
-    printResponse(jsonResponse);
-  }
-  //var errCode=checkStatus(jsonResponse);
-  //console.log(checkStatus(jsonResponse));
-  process.exit(checkStatus(jsonResponse));
+  
+  readIgnoreURL().then((urlToBeIgnored) => {
+    urlList = urlList.filter((url) => !urlToBeIgnored.includes(url));
+    Promise.all(urlList.map((url) => {
+      return fetch(url, { method: "head", timeout: 1500 }).then((response) => {
+        return Promise.resolve({ url, status: `${response.status}` });
+      }).catch((error) => {
+        return Promise.resolve({ url, status: (error.response && error.response.status) || 'UNKNOWN' });
+      });
+    })).then((result) => {
+      argv.json ? console.log(JSON.stringify(result)) : printResponse(result);
+      process.exit(checkStatus(result));
+    }).catch((error) => {
+      console.log('Error occured while checking status', error);
+    });
+  });
 });
+  
 process.on("exit", function (code) {
   return console.log(`About to exit with code ${code}`);
 });
