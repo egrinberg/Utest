@@ -5,18 +5,11 @@ const boxen = require("boxen");
 const yargs = require("yargs");
 const fetch = require("node-fetch");
 const fs = require("fs");
-const v = require("./package.json").version;
+const version = require("./package.json").version;
+const { boxenOptions } = require("./styling/style");
 
-//styling of the box for the tool name and version
-const boxenOptions = {
-  padding: 1,
-  margin: 1,
-  borderStyle: "round",
-  borderColor: "green",
-  backgroundColor: "#555555",
-};
 
-const vmessage = chalk.white.bold(`Utest version: ${v}`);
+const vmessage = chalk.white.bold(`Utest version: ${version}`);
 const msgBox = boxen(vmessage, boxenOptions);
 
 const argv = yargs
@@ -72,8 +65,8 @@ function checkStatus(data) {
 }
 
 s.on("end", async () => {
-  var jsonResponse = [];
-  var jsonU;
+  var responseStatusByUrl = [];
+  var statusResponseForUrl;
 
   //Iterate through the links and check their status
 
@@ -81,22 +74,21 @@ s.on("end", async () => {
     urlList.map(async (url) => {
       try {
         const urlTest = await fetch(url, { method: "head", timeout: 1500 });
-        jsonU = { url: `${url}`, status: `${urlTest.status}` };
-        jsonResponse.push(jsonU);
+        statusResponseForUrl = { url: `${url}`, status: `${urlTest.status}` };
+        responseStatusByUrl.push(statusResponseForUrl);
       } catch (error) {
-        jsonU = { url: `${url}`, status: "UNKNOWN" };
-        jsonResponse.push(jsonU);
+        statusResponseForUrl = { url: `${url}`, status: "UNKNOWN" };
+        responseStatusByUrl.push(statusResponseForUrl);
       }
     })
   );
   if (argv.json) {
-    console.log(JSON.stringify(jsonResponse));
+    console.log(JSON.stringify(responseStatusByUrl));
   } else {
-    printResponse(jsonResponse);
+    printResponse(responseStatusByUrl);
   }
-  //var errCode=checkStatus(jsonResponse);
-  //console.log(checkStatus(jsonResponse));
-  process.exit(checkStatus(jsonResponse));
+  
+  process.exit(checkStatus(responseStatusByUrl));
 });
 process.on("exit", function (code) {
   return console.log(`About to exit with code ${code}`);
