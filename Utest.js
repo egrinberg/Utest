@@ -8,6 +8,7 @@ const fs = require("fs");
 const readline = require("readline");
 const { boolean } = require("yargs");
 const { resolve } = require("path");
+//const { error } = require("console");
 const v = require("./package.json").version;
 
 //styling of the box for the tool name and version
@@ -60,18 +61,19 @@ function readIgnoreURL(){
       input: fs.createReadStream(argv.ignore),
       console: false
     });
-
+  
     readInterface
     .on('line', function(line) {
       if(!line.startsWith('#'))
         urlToBeIgnored.push(line);
     })
+    .on('error', function(error) {
+      reject(error)
+    })
     .on('close', function() {
       resolve(urlToBeIgnored);
-    })
-    .on('error', function(error) {
-      reject(error);
-    });
+    }); 
+
   });
 }
 
@@ -117,9 +119,12 @@ s.on("end", async () => {
     }).catch((error) => {
       console.log('Error occured while checking status', error);
     });
+  })
+  .catch(err => {
+    console.log("Error occurred while reading file", err)
   });
 });
-  
+
 process.on("exit", function (code) {
   return console.log(`About to exit with code ${code}`);
 });
