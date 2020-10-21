@@ -5,8 +5,11 @@ const boxen = require("boxen");
 const yargs = require("yargs");
 const fetch = require("node-fetch");
 const fs = require("fs");
-const version = require("./package.json").version;
-const { boxenOptions } = require("./styling/style");
+const readline = require("readline");
+const { boolean } = require("yargs");
+const { resolve } = require("path");
+//const { error } = require("console");
+const v = require("./package.json").version;
 
 
 const vmessage = chalk.white.bold(`Utest version: ${version}`);
@@ -24,12 +27,14 @@ const argv = yargs
   .alias("V", "version")
   .alias("j", "json")
   .describe("json", "print in JSON format")
+  .alias("i","ignore")
+  .nargs("i", 1)
+  .describe("ignore","ignore URLs in this file")
   .version(`${msgBox}`)
   .describe("version", "show version information").argv;
 
 // Create stream with the file
 const s = fs.createReadStream(argv.file);
-
 let urlList;
 s.on("data", (buf) => {
   // Get all the URL links from the file
@@ -37,6 +42,32 @@ s.on("data", (buf) => {
     .toString()
     .match(/(http|https)(:\/\/)([\w+\-&@`~#$%^*.=/?:]+)/gi);
 });
+
+function readIgnoreURL(){
+  if(!argv.ignore)
+    return Promise.resolve([]);
+
+  return new Promise((resolve, reject) => {
+    const urlToBeIgnored = [];
+    const readInterface = readline.createInterface({
+      input: fs.createReadStream(argv.ignore),
+      console: false
+    });
+  
+    readInterface
+    .on('line', function(line) {
+      if(!line.startsWith('#'))
+        urlToBeIgnored.push(line);
+    })
+    .on('error', function(error) {
+      reject(error)
+    })
+    .on('close', function() {
+      resolve(urlToBeIgnored);
+    }); 
+
+  });
+}
 
 //print responses colorized
 function printResponse(data) {
@@ -65,31 +96,27 @@ function checkStatus(data) {
 }
 
 s.on("end", async () => {
-  var responseStatusByUrl = [];
-  var statusResponseForUrl;
-
-  //Iterate through the links and check their status
-
-  await Promise.all(
-    urlList.map(async (url) => {
-      try {
-        const urlTest = await fetch(url, { method: "head", timeout: 1500 });
-        statusResponseForUrl = { url: `${url}`, status: `${urlTest.status}` };
-        responseStatusByUrl.push(statusResponseForUrl);
-      } catch (error) {
-        statusResponseForUrl = { url: `${url}`, status: "UNKNOWN" };
-        responseStatusByUrl.push(statusResponseForUrl);
-      }
-    })
-  );
-  if (argv.json) {
-    console.log(JSON.stringify(responseStatusByUrl));
-  } else {
-    printResponse(responseStatusByUrl);
-  }
   
-  process.exit(checkStatus(responseStatusByUrl));
+  readIgnoreURL().then((urlToBeIgnored) => {
+    urlList = urlList.filter((url) => !urlToBeIgnored.includes(url));
+    Promise.all(urlList.map((url) => {
+      return fetch(url, { method: "head", timeout: 1500 }).then((response) => {
+        return Promise.resolve({ url, status: `${response.status}` });
+      }).catch((error) => {
+        return Promise.resolve({ url, status: (error.response && error.response.status) || 'UNKNOWN' });
+      });
+    })).then((result) => {
+      argv.json ? console.log(JSON.stringify(result)) : printResponse(result);
+      process.exit(checkStatus(result));
+    }).catch((error) => {
+      console.log('Error occured while checking status', error);
+    });
+  })
+  .catch(err => {
+    console.log("Error occurred while reading file", err)
+  });
 });
+
 process.on("exit", function (code) {
   return console.log(`About to exit with code ${code}`);
 });

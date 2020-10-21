@@ -24,6 +24,10 @@ Help:
 
 > utest -h or utest --help
 
+Ignore URLS:
+
+> utest -i <filename> or utest --ignore <filename>
+
 **Features**
 
 - The tool finds all URLs in the file by using http:// or https:// schemes
@@ -41,5 +45,7 @@ Help:
 - Network code is optimized to only request headers
 
 - Appropriate error code is printed when program exits. If there are no errors meaning all links are good,the program exits with 0. Otherwise, exits with a non-zero exit code.
+
+- Ignore URL pattern feature is added to ignore specified URL patterns.
 
 For examples please visit https://medium.com/@egrinberg/cli-utest-19f1429a8de4

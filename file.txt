@@ -14,3 +14,4 @@ this line www.hey.ca
 "https://httpstat.us/404"
 http://abc.go.com/%
 https://httpstatuses.com/400
+https://learn.senecacollege.ca/
