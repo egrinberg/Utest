@@ -75,20 +75,6 @@ function readIgnoreURL(){
   });
 }
 
-function ignore(url){
-  var result=false;
-  if(![ignoreUrls.length<1 || ignoreUrls==undefined]){
-    ignoreUrls.forEach(e => {
-      if(url.startsWith(e))
-      {
-        console.log(url);
-        result=true;
-      }
-    });
-  }
-  return result;
-}
-
 //print responses colorized
 function printResponse(data) {
   for (var item of data) {
