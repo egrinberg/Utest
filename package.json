@@ -23,7 +23,6 @@
     "prettier-check": "prettier --check \"./**/*.{md,jsx,json,html,css,js,yml}\"",
     "test": "jest",
     "coverage": "jest --collectCoverage"
-
   },
   "keywords": [
     "cli"
