@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`end-to-end integration when argument --help is specified should print help message 1`] = `
+"Usage: Utest.js [option]
+
+Options:
+  -f, --file     Load a file                                          [required]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  show version information                              [boolean]
+  -V, --version  show version information                              [boolean]
+  -j, --json     print in JSON format"
+`;
+
+exports[`end-to-end integration when no arguments passed prints error and help message 1`] = `
+"Usage: Utest.js [option]
+
+Options:
+  -f, --file     Load a file                                          [required]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  show version information                              [boolean]
+  -V, --version  show version information                              [boolean]
+  -j, --json     print in JSON format
+
+Missing required argument: f"
+`;
