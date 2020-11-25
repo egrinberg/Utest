@@ -14,7 +14,7 @@ Find and check URLs inside file:
 
 Print the response in JSON format:
 
-> utest -j -f <filename> or utest --json -f <filename>
+> utest -j -f <filename> or utest --json -f <filename> or utest -j -file <filename> or utest --json --file <filename>
 
 Version information:
 
