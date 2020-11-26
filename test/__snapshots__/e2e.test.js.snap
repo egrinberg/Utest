@@ -11,7 +11,109 @@ Options:
   -j, --json     print in JSON format"
 `;
 
+exports[`end-to-end integration when argument -f without file is specified should print help message 1`] = `
+"Usage: Utest.js [option]
+
+Options:
+  -f, --file     Load a file                                          [required]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  show version information                              [boolean]
+  -V, --version  show version information                              [boolean]
+  -j, --json     print in JSON format
+
+Not enough arguments following: f"
+`;
+
+exports[`end-to-end integration when argument --file without file is specified should print help message 1`] = `
+"Usage: Utest.js [option]
+
+Options:
+  -f, --file     Load a file                                          [required]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  show version information                              [boolean]
+  -V, --version  show version information                              [boolean]
+  -j, --json     print in JSON format
+
+Not enough arguments following: file"
+`;
+
+exports[`end-to-end integration when argument -h is specified should print help message 1`] = `
+"Usage: Utest.js [option]
+
+Options:
+  -f, --file     Load a file                                          [required]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  show version information                              [boolean]
+  -V, --version  show version information                              [boolean]
+  -j, --json     print in JSON format"
+`;
+
+exports[`end-to-end integration when argument -j without file is specified should print help message 1`] = `
+"Usage: Utest.js [option]
+
+Options:
+  -f, --file     Load a file                                          [required]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  show version information                              [boolean]
+  -V, --version  show version information                              [boolean]
+  -j, --json     print in JSON format
+
+Missing required argument: f"
+`;
+
 exports[`end-to-end integration when no arguments passed prints error and help message 1`] = `
+"Usage: Utest.js [option]
+
+Options:
+  -f, --file     Load a file                                          [required]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  show version information                              [boolean]
+  -V, --version  show version information                              [boolean]
+  -j, --json     print in JSON format
+
+Missing required argument: f"
+`;
+
+exports[`end-to-end integration when argument -j -f without file is specified should print help message 1`] = `
+"Usage: Utest.js [option]
+
+Options:
+  -f, --file     Load a file                                          [required]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  show version information                              [boolean]
+  -V, --version  show version information                              [boolean]
+  -j, --json     print in JSON format
+
+Missing required argument: f"
+`;
+
+exports[`end-to-end integration when argument --json -f without file is specified should print help message 1`] = `
+"Usage: Utest.js [option]
+
+Options:
+  -f, --file     Load a file                                          [required]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  show version information                              [boolean]
+  -V, --version  show version information                              [boolean]
+  -j, --json     print in JSON format
+
+Missing required argument: f"
+`;
+
+exports[`end-to-end integration when argument -j --file without file is specified should print help message 1`] = `
+"Usage: Utest.js [option]
+
+Options:
+  -f, --file     Load a file                                          [required]
+  -h, --help     Show help                                             [boolean]
+  -v, --version  show version information                              [boolean]
+  -V, --version  show version information                              [boolean]
+  -j, --json     print in JSON format
+
+Missing required argument: f"
+`;
+
+exports[`end-to-end integration when argument --json --file without file is specified should print help message 1`] = `
 "Usage: Utest.js [option]
 
 Options:
