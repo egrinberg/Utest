@@ -28,7 +28,7 @@
     "cli"
   ],
   "preferGlobal": true,
-  "author": "Ekaterina Grinberg",
+  "author": "Ekaterina Grinberg <egrinberg@myseneca.ca>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/egrinberg/Utest/issues"
