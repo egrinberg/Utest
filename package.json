@@ -1,5 +1,5 @@
 {
-  "name": "utest",
+  "name": "urltest",
   "version": "1.0.0",
   "description": "Command-line tool for finding and reporting dead links in a file",
   "bin": {
