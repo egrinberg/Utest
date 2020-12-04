@@ -1,10 +1,9 @@
 const { processArguments } = require('./lib/argProcess');
 
-function main() {
+function urlTester() {
   processArguments();
   console.log('test the module');
 }
 
-main();
-
-module.exports.main = main;
+urlTester();
+module.exports.urlTester = urlTester;
