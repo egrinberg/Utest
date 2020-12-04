@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const { processArguments } = require('./lib/argProcess');
 
 function urlTester() {
